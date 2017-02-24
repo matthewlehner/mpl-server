@@ -1,0 +1,31 @@
+---
+- hosts: xenials
+  remote_user: root
+  gather_facts: no
+  tasks:
+  - name: apt-get update
+    raw: apt-get update -qq
+  - name: Install Python 2.7
+    raw: apt-get install -qq python2.7
+
+- hosts: webservers
+  remote_user: root
+  tasks:
+  - name: Create deployer group
+    group:
+      name: deployer
+      state: present
+
+  - name: Create deployer user
+    user:
+      name: deployer
+      comment: "Deployer user"
+      groups: sudo,deployer
+      append: yes
+      state: present
+
+  - name: Add local ssh key to authorized hosts for deployer
+    authorized_key:
+      user: deployer
+      state: present
+      key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"

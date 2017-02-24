@@ -1,0 +1,8 @@
+[xenials]
+138.197.158.247
+
+[xenials:vars]
+ansible_python_interpreter=/usr/bin/python2.7
+
+[webservers:children]
+xenials
