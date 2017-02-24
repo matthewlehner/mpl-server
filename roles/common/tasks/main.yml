@@ -1,0 +1,8 @@
+---
+- name: Install common dependencies
+  apt:
+    state: installed
+    install_recommends: no
+    name: '{{item}}'
+  with_items:
+    - build-essential

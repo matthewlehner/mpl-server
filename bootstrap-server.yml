@@ -3,24 +3,25 @@
   remote_user: root
   gather_facts: no
   tasks:
+  - name: Checking for Python 2.7
+    raw: which /usr/bin/python2.7
+    register: python_bin
+    ignore_errors: yes
+
   - name: apt-get update
     raw: apt-get update -qq
+    when: python_bin.rc == 1
   - name: Install Python 2.7
     raw: apt-get install -qq python2.7
+    when: python_bin.rc == 1
 
 - hosts: webservers
   remote_user: root
   tasks:
-  - name: Create deployer group
-    group:
-      name: deployer
-      state: present
-
   - name: Create deployer user
     user:
       name: deployer
       comment: "Deployer user"
-      groups: sudo,deployer
       append: yes
       state: present
 
@@ -29,3 +30,10 @@
       user: deployer
       state: present
       key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+  roles:
+    - common
+
+- hosts: webservers
+  remote_user: root
+  roles:
+    - nginx
